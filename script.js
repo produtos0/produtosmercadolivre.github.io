@@ -8,7 +8,9 @@ const searchBtn = document.getElementById("searchBtn");
 // CONTROLE DE PAGINAÇÃO
 // =========================
 let pagina = 1;
+
 const porPagina = 50;
+
 let listaAtual = [];
 
 // =========================
@@ -32,7 +34,10 @@ async function carregarProdutos() {
 
     } catch (error) {
 
-        console.error("Erro ao carregar produtos:", error);
+        console.error(
+            "Erro ao carregar produtos:",
+            error
+        );
 
     }
 
@@ -43,14 +48,20 @@ async function carregarProdutos() {
 // =========================
 function renderizarProdutos() {
 
-    const inicio = (pagina - 1) * porPagina;
+    const inicio =
+        (pagina - 1) * porPagina;
 
-    const fim = inicio + porPagina;
+    const fim =
+        inicio + porPagina;
 
-    const itens = listaAtual.slice(inicio, fim);
+    const itens =
+        listaAtual.slice(inicio, fim);
 
     // remove botão antigo
-    const antigoBotao = document.querySelector(".load-more-wrapper");
+    const antigoBotao =
+        document.querySelector(
+            ".load-more-wrapper"
+        );
 
     if (antigoBotao) {
         antigoBotao.remove();
@@ -74,20 +85,62 @@ function renderizarProdutos() {
         productGrid.innerHTML = "";
     }
 
-    // renderiza produtos
-    const html = itens.map(p => `
+    // =========================
+    // RENDERIZA PRODUTOS
+    // =========================
+
+    const html = itens.map(p => {
+
+        const nome =
+            p.titulo ||
+            p.nome ||
+            p.title ||
+            "Produto sem nome";
+
+        const imagem =
+            p.imagem ||
+            p.image ||
+            "";
+
+        const preco =
+            p.preco ||
+            p.price ||
+            "Preço indisponível";
+
+        const link =
+            p.link ||
+            p.url ||
+            "#";
+
+        const nomeCurto =
+            nome.length > 80
+                ? nome.slice(0, 80) + "..."
+                : nome;
+
+        return `
 
         <div class="product-card">
 
-            <img loading="lazy" src="${p.imagem}" alt="${p.nome}">
+            <img
+                loading="lazy"
+                src="${imagem}"
+                alt="${nome}"
+            >
 
             <div class="product-info">
 
-                <h3>${p.nome}</h3>
+                <h3>${nomeCurto}</h3>
 
-                <span class="price">${p.preco}</span>
+                <span class="price">
+                    ${preco}
+                </span>
 
-                <a href="${p.link}" target="_blank" class="offer-btn">
+                <a
+                    href="${link}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="offer-btn"
+                >
                     Ver Produto
                 </a>
 
@@ -95,7 +148,9 @@ function renderizarProdutos() {
 
         </div>
 
-    `).join("");
+        `;
+
+    }).join("");
 
     productGrid.innerHTML += html;
 
@@ -107,34 +162,53 @@ function renderizarProdutos() {
 // =========================
 function criarBotaoCarregarMais() {
 
-    const totalExibidos = pagina * porPagina;
+    const totalExibidos =
+        pagina * porPagina;
 
     // se acabou produtos
-    if (totalExibidos >= listaAtual.length) return;
+    if (totalExibidos >= listaAtual.length)
+        return;
 
     // container
-    const wrapper = document.createElement("div");
+    const wrapper =
+        document.createElement("div");
 
-    wrapper.classList.add("load-more-wrapper");
+    wrapper.classList.add(
+        "load-more-wrapper"
+    );
+
     wrapper.style.marginTop = "30px";
-    
 
     // botão
-    const btn = document.createElement("button");
+    const btn =
+        document.createElement("button");
 
     btn.innerText = "Carregar mais";
 
     btn.classList.add("offer-btn");
-    btn.style.background = "linear-gradient(180deg, #ffe24a 0%, #f7d420 100%)";
-btn.style.color = "#000";
-btn.style.border = "none";
-btn.style.borderRadius = "14px";
-btn.style.padding = "12px 26px";
-btn.style.fontWeight = "700";
-btn.style.fontSize = "15px";
-btn.style.cursor = "pointer";
-btn.style.boxShadow = "0 6px 18px rgba(255, 217, 0, 0.25)";
-btn.style.marginTop = "30px";
+
+    btn.style.background =
+        "linear-gradient(180deg, #ffe24a 0%, #f7d420 100%)";
+
+    btn.style.color = "#000";
+
+    btn.style.border = "none";
+
+    btn.style.borderRadius = "14px";
+
+    btn.style.padding = "12px 26px";
+
+    btn.style.fontWeight = "700";
+
+    btn.style.fontSize = "15px";
+
+    btn.style.cursor = "pointer";
+
+    btn.style.boxShadow =
+        "0 6px 18px rgba(255, 217, 0, 0.25)";
+
+    btn.style.marginTop = "30px";
+
     // clique
     btn.addEventListener("click", () => {
 
@@ -161,14 +235,19 @@ function pesquisarProdutos() {
 
     timeout = setTimeout(() => {
 
-        const termo = searchInput.value
-            .toLowerCase()
-            .trim();
+        const termo =
+            searchInput.value
+                .toLowerCase()
+                .trim();
 
         listaAtual = termo
 
             ? produtos.filter(p =>
-                p.nome.toLowerCase().includes(termo)
+
+                (p.titulo || p.nome || "")
+                    .toLowerCase()
+                    .includes(termo)
+
             )
 
             : produtos;
@@ -183,9 +262,28 @@ function pesquisarProdutos() {
 // =========================
 // EVENTOS
 // =========================
-searchInput.addEventListener("input", pesquisarProdutos);
 
-searchBtn.addEventListener("click", pesquisarProdutos);
+searchInput.addEventListener(
+    "input",
+    pesquisarProdutos
+);
+
+searchBtn.addEventListener(
+    "click",
+    pesquisarProdutos
+);
+
+// pesquisar apertando enter
+searchInput.addEventListener(
+    "keydown",
+    (e) => {
+
+        if (e.key === "Enter") {
+            pesquisarProdutos();
+        }
+
+    }
+);
 
 // =========================
 // INICIAR
