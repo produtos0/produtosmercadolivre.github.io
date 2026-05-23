@@ -20,9 +20,63 @@ async function carregarProdutos() {
 
     try {
 
-        const response = await fetch("./produtos.json");
+        const [
+            nomesRes,
+            precosRes,
+            linksRes,
+            imagensRes
+        ] = await Promise.all([
 
-        produtos = await response.json();
+            fetch("./nomes.json"),
+            fetch("./precos.json"),
+            fetch("./links.json"),
+            fetch("./imagens.json")
+
+        ]);
+
+        const nomes = await nomesRes.json();
+        const precos = await precosRes.json();
+        const links = await linksRes.json();
+        const imagens = await imagensRes.json();
+
+        produtos = [];
+
+        const total = Math.max(
+            nomes.length,
+            precos.length,
+            links.length,
+            imagens.length
+        );
+
+        for (let i = 0; i < total; i++) {
+
+            // ignora produto totalmente vazio
+            if (
+                !nomes[i] &&
+                !precos[i] &&
+                !links[i] &&
+                !imagens[i]
+            ) {
+                continue;
+            }
+
+            produtos.push({
+
+                titulo:
+                    nomes[i] || "Sem nome",
+
+                preco:
+                    precos[i] || "Preço indisponível",
+
+                link:
+                    links[i] || "#",
+
+                imagem:
+                    imagens[i] || ""
+
+            });
+
+        }
 
         listaAtual = produtos;
 
